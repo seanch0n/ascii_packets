@@ -211,6 +211,8 @@ func findDirection(input string, leftNode string, rightNode string) (string, err
 
 func main() {
 	filePathPtr := flag.String("path", "input.txt", "path to file with diagram data")
+	node1Ptr := flag.String("node1", "client", "name of the first node")
+	node2Ptr := flag.String("node2", "server", "name of the 2nd node")
 
 	flag.Parse()
 	file, err := os.Open(*filePathPtr)
@@ -223,5 +225,5 @@ func main() {
 	if err != nil {
 		log.Fatal("Error reading file")
 	}
-	buildSequence(lines, "client", "server")
+	buildSequence(lines, *node1Ptr, *node2Ptr)
 }
