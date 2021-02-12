@@ -255,12 +255,12 @@ func TestBuildSequence(t *testing.T) {
 		}
 		leftNode := "client"
 		rightNode := "server"
-		want := `*---------------------------------*
-|        |-----SYN------>|        |
-| client |<---SYN/ACK----| server |
-|        |-----ACK------>|        |
-|        |<----data----->|        |
-*---------------------------------*`
+		want := `*-------------------------------*
+|        |----SYN----->|        |
+| client |<--SYN/ACK---| server |
+|        |----ACK----->|        |
+|        |<---data---->|        |
+*-------------------------------*`
 		assertSequence(t, input, leftNode, rightNode, want)
 	})
 }

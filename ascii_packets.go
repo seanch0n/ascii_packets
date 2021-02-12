@@ -72,6 +72,23 @@ func getMaxLengthString(input []string) int {
 	return max
 }
 
+func getMaxLengthMsg(input []string) int {
+	max := -1
+	for _, s := range input {
+		msg, err := parseMsg(s)
+		if err != nil {
+			return -1
+		}
+		if len(msg) < max {
+			continue
+		}
+		if len(msg) > max {
+			max = len(msg)
+		}
+	}
+	return max
+}
+
 func readFile(reader io.Reader) ([]string, error) {
 	lines, err := ioutil.ReadAll(reader)
 	if err != nil {
@@ -121,8 +138,9 @@ func parseMsg(text string) (string, error) {
 func buildSequence(lines []string, leftNode string, rightNode string) string {
 	corner := "*"
 	c := "-"
+	arrowLength := getMaxLengthMsg(lines) + 6
 	var final []string
-	horizontalEdgeLen := getMaxLengthString(lines) + len(leftNode) + len(rightNode) - 1
+	horizontalEdgeLen := arrowLength + len(leftNode) + len(rightNode) + 6
 	horizontalEdge := corner + genStringOfLen(c, horizontalEdgeLen) + corner
 	final = append(final, horizontalEdge)
 	for idx, line := range lines {
@@ -141,10 +159,9 @@ func buildSequence(lines []string, leftNode string, rightNode string) string {
 		if err != nil {
 			return ""
 		}
-		final = append(final, buildWall(leftNode, insert)+genArrow(arrowDirection, 15, arrowText)+buildWall(rightNode, insert))
+		final = append(final, buildWall(leftNode, insert)+genArrow(arrowDirection, arrowLength, arrowText)+buildWall(rightNode, insert))
 	}
 	final = append(final, horizontalEdge)
-	fmt.Println(strings.Join(final[:], "\n"))
 
 	return strings.Join(final[:], "\n")
 }
@@ -225,5 +242,5 @@ func main() {
 	if err != nil {
 		log.Fatal("Error reading file")
 	}
-	buildSequence(lines, *node1Ptr, *node2Ptr)
+	fmt.Println(buildSequence(lines, *node1Ptr, *node2Ptr))
 }
