@@ -1,6 +1,10 @@
 package ascii_packets
 
-import "testing"
+import (
+	"bytes"
+	"reflect"
+	"testing"
+)
 
 func TestGenerateBorder(t *testing.T) {
 	assertBox := func(t testing.TB, input string, want string) {
@@ -74,6 +78,7 @@ func TestGetMaxLengthString(t *testing.T) {
 
 func TestGenStringOfLen(t *testing.T) {
 	assertStringOfLen := func(t testing.TB, c string, len int, want string) {
+		t.Helper()
 		got := genStringOfLen(c, len)
 		if got != want {
 			t.Errorf("got %s want %s", got, want)
@@ -108,6 +113,39 @@ func TestGenStringOfLen(t *testing.T) {
 		len := 2
 		expected := "AA"
 		assertStringOfLen(t, c, len, expected)
+	})
+
+}
+
+func TestReadDataFile(t *testing.T) {
+	assertRead := func(t testing.TB, input string, want []string) {
+		t.Helper()
+		var buffer bytes.Buffer
+		buffer.WriteString(input)
+		content, err := readFile(&buffer)
+		if err != nil {
+			t.Errorf("failed to read file")
+		}
+		if reflect.DeepEqual(content, want) != true {
+			t.Errorf("got %v want %v", content, want)
+		}
+	}
+	t.Run("one liner with multiple words", func(t *testing.T) {
+		input := "fake data neato-burrito"
+		want := []string{"fake data neato-burrito"}
+		assertRead(t, input, want)
+	})
+
+	t.Run("one word one line", func(t *testing.T) {
+		input := "word"
+		want := []string{"word"}
+		assertRead(t, input, want)
+	})
+	t.Run("two lines of data", func(t *testing.T) {
+		input := `one word
+two lines`
+		want := []string{"one word", "two lines"}
+		assertRead(t, input, want)
 	})
 
 }

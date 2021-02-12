@@ -1,6 +1,10 @@
 package ascii_packets
 
 import (
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
 	"strings"
 )
 
@@ -62,4 +66,25 @@ func getMaxLengthString(input []string) int {
 		}
 	}
 	return max
+}
+
+func readFile(reader io.Reader) ([]string, error) {
+	lines, err := ioutil.ReadAll(reader)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return strings.Split(string(lines), "\n"), nil
+}
+
+func readDataFile(filename string) ([]string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	lines, err := readFile(file)
+	if err != nil {
+		return nil, err
+	}
+	return lines, nil
 }
