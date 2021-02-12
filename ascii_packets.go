@@ -1,6 +1,7 @@
 package ascii_packets
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -115,23 +116,32 @@ func parseMsg(text string) (string, error) {
 	We need to build a rectangle for each actor, the length of num lines - 1
 	Then build arrows for the connections.
 */
-// func buildSequence(lines string, leftNode string, rightNode string) string {
-// 	corner := "*"
-// 	side := "|"
-// 	c := "-"
-// 	var final string
-// 	for idx, line := range lines {
-// 		insert := false
-// 		// | leftNode |-----SYN---->| rightNode |
-// 		if idx/len(lines) == 2 {
-// 			// we need to insert the word half way through the rectangle
-// 			insert = true
-// 		}
-// 		final += buildWall(leftNode, insert) // + arrow + buildWall(rightNode, insert)
-// 	}
+func buildSequence(lines []string, leftNode string, rightNode string) string {
+	corner := "*"
+	c := "-"
+	var final []string
+	horizontalEdgeLen := getMaxLengthString(lines) + len(leftNode)
+	horizontalEdge := corner + genStringOfLen(c, horizontalEdgeLen) + corner
+	final = append(final, horizontalEdge)
+	for idx, line := range lines {
+		idx++
+		insert := false
+		// | leftNode |-----SYN---->| rightNode |
+		if len(lines)/idx == 2 {
+			// we need to insert the word half way through the rectangle
+			insert = true
+		}
+		arrowText, err := parseMsg(line)
+		if err != nil {
+			return ""
+		}
+		final = append(final, buildWall(leftNode, insert)+genArrow("left", 15, arrowText)+buildWall(rightNode, insert))
+	}
+	final = append(final, horizontalEdge)
+	fmt.Println(strings.Join(final[:], "\n"))
 
-// 	return "ahh"
-// }
+	return strings.Join(final[:], "\n")
+}
 
 func readDataFile(filename string) ([]string, error) {
 	file, err := os.Open(filename)

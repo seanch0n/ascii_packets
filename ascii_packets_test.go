@@ -237,3 +237,30 @@ func TestBuildWall(t *testing.T) {
 		assertWall(t, input, insert, want)
 	})
 }
+
+func TestBuildSequence(t *testing.T) {
+	assertSequence := func(t testing.TB, input []string, leftNode string, rightNode string, want string) {
+		t.Helper()
+		got := buildSequence(input, leftNode, rightNode)
+		if got != want {
+			t.Errorf("got\n%q\nwant\n%q", got, want)
+		}
+	}
+	t.Run("basic", func(t *testing.T) {
+		input := []string{
+			"client-conn-server: SYN",
+			"server-conn-client: SYN/ACK",
+			"client-conn-server: ACK",
+			"server-biconn-client: data",
+		}
+		leftNode := "client"
+		rightNode := "server"
+		want := `*---------------------------------*
+|        |<-----SYN------|        |
+| client |<---SYN/ACK----| server |
+|        |<-----ACK------|        |
+|        |<-----data-----|        |
+*---------------------------------*`
+		assertSequence(t, input, leftNode, rightNode, want)
+	})
+}
