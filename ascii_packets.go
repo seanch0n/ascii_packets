@@ -166,20 +166,6 @@ func buildSequence(lines []string, leftNode string, rightNode string) string {
 	return strings.Join(final[:], "\n")
 }
 
-func readDataFile(filename string) ([]string, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	// gets an array of each line of the file.
-	lines, err := readFile(file)
-	if err != nil {
-		return nil, err
-	}
-	return lines, nil
-}
-
 // refactor this to take the string for the middle of the arrow:
 // ----SYN---->
 // Note that it will truncate for odds.
