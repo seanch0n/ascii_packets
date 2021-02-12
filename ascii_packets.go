@@ -120,7 +120,7 @@ func buildSequence(lines []string, leftNode string, rightNode string) string {
 	corner := "*"
 	c := "-"
 	var final []string
-	horizontalEdgeLen := getMaxLengthString(lines) + len(leftNode)
+	horizontalEdgeLen := getMaxLengthString(lines) + len(leftNode) + len(rightNode) - 1
 	horizontalEdge := corner + genStringOfLen(c, horizontalEdgeLen) + corner
 	final = append(final, horizontalEdge)
 	for idx, line := range lines {
@@ -135,7 +135,11 @@ func buildSequence(lines []string, leftNode string, rightNode string) string {
 		if err != nil {
 			return ""
 		}
-		final = append(final, buildWall(leftNode, insert)+genArrow("left", 15, arrowText)+buildWall(rightNode, insert))
+		arrowDirection, err := findDirection(line, leftNode, rightNode)
+		if err != nil {
+			return ""
+		}
+		final = append(final, buildWall(leftNode, insert)+genArrow(arrowDirection, 15, arrowText)+buildWall(rightNode, insert))
 	}
 	final = append(final, horizontalEdge)
 	fmt.Println(strings.Join(final[:], "\n"))
@@ -182,4 +186,23 @@ func genArrow(arrowType string, len int, text string) string {
 		base = "<" + base + ">"
 	}
 	return base
+}
+
+func findDirection(input string, leftNode string, rightNode string) (string, error) {
+	nodeLoc := strings.IndexByte(input, '-')
+	if nodeLoc == -1 {
+		nodeLoc = strings.IndexByte(input, '=')
+		if nodeLoc == -1 {
+			return "", &errorString{"Failed to find a node in string"}
+		}
+		return "bi", nil
+	}
+	node := input[:nodeLoc]
+	if node == leftNode {
+		return "right", nil
+	} else if node == rightNode {
+		return "left", nil
+	} else {
+		return "", &errorString{"Node does not match left or right nodes"}
+	}
 }
