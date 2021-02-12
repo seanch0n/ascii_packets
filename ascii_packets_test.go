@@ -177,3 +177,53 @@ func TestGenArrow(t *testing.T) {
 		assertArrow(t, arrowType, arrowLen, want)
 	})
 }
+
+func TestParseMsg(t *testing.T) {
+	assertParse := func(t testing.TB, input string, want string, wantErr bool) {
+		t.Helper()
+		got, err := parseMsg(input)
+		if (err != nil) != wantErr {
+			t.Errorf("got an error: %s", err)
+		}
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	}
+	t.Run("SYN", func(t *testing.T) {
+		input := "client-conn-server: SYN"
+		want := "SYN"
+		assertParse(t, input, want, false)
+	})
+	t.Run("error, no ':'", func(t *testing.T) {
+		input := "client-conn-server SYN"
+		want := ""
+		assertParse(t, input, want, true)
+	})
+	t.Run("too many ':'", func(t *testing.T) {
+		input := "client:conn:server: SYN"
+		want := ""
+		assertParse(t, input, want, true)
+	})
+}
+
+func TestBuildWall(t *testing.T) {
+	assertWall := func(t testing.TB, input string, insert bool, want string) {
+		t.Helper()
+		got := buildWall(input, insert)
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	}
+	t.Run("no insert", func(t *testing.T) {
+		input := "hello there"
+		insert := false
+		want := "|             |"
+		assertWall(t, input, insert, want)
+	})
+	t.Run("insert", func(t *testing.T) {
+		input := "hello there"
+		insert := true
+		want := "| hello there |"
+		assertWall(t, input, insert, want)
+	})
+}

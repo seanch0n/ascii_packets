@@ -3,8 +3,8 @@ package ascii_packets
 import (
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -71,11 +71,61 @@ func getMaxLengthString(input []string) int {
 func readFile(reader io.Reader) ([]string, error) {
 	lines, err := ioutil.ReadAll(reader)
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 	return strings.Split(string(lines), "\n"), nil
 }
+
+func buildWall(text string, insert bool) string {
+	pad := genStringOfLen(" ", (len(text) + 2))
+	if insert {
+		pad = " " + text + " "
+	}
+	final := "|" + pad + "|"
+	return final
+}
+
+type errorString struct {
+	s string
+}
+
+func (e *errorString) Error() string {
+	return e.s
+}
+
+func parseMsg(text string) (string, error) {
+	// make sure we don't have too many colons. We only want 1
+	r := regexp.MustCompile(":")
+	count := len(r.FindAllStringIndex(text, -1))
+	if count > 2 {
+		return "", &errorString{"Too many values matched"}
+	}
+
+	match := strings.Split(text, ": ")
+	if len(match) == 2 {
+		return match[len(match)-1], nil
+	}
+	return "", &errorString{"Did not find a match"}
+}
+
+/*
+	Read the file, count the number of lines. The number of lines - 1 is the number of connections
+	in the sequence.
+	We need to build a rectangle for each actor, the length of num lines - 1
+	Then build arrows for the connections.
+*/
+// func buildSequence(lines string, leftNode string, rightNode string) string {
+// 	corner := "*"
+// 	side := "|"
+// 	c := "-"
+// 	var final string
+// 	for idx, line := range lines {
+// 		// | leftNode |-----SYN---->| rightNode |
+// 		final += buildWall(leftNode)
+// 	}
+
+// 	return "ahh"
+// }
 
 func readDataFile(filename string) ([]string, error) {
 	file, err := os.Open(filename)
