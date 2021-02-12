@@ -1,0 +1,4 @@
+client-server: SYN
+server-client: SYN/ACK
+client-server: ACK
+server=client: data

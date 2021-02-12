@@ -1,9 +1,11 @@
-package ascii_packets
+package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -205,4 +207,21 @@ func findDirection(input string, leftNode string, rightNode string) (string, err
 	} else {
 		return "", &errorString{"Node does not match left or right nodes"}
 	}
+}
+
+func main() {
+	filePathPtr := flag.String("path", "input.txt", "path to file with diagram data")
+
+	flag.Parse()
+	file, err := os.Open(*filePathPtr)
+	if err != nil {
+		log.Fatal("Error opening file")
+	}
+	defer file.Close()
+	// gets an array of each line of the file.
+	lines, err := readFile(file)
+	if err != nil {
+		log.Fatal("Error reading file")
+	}
+	buildSequence(lines, "client", "server")
 }
