@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 /*
@@ -120,8 +121,13 @@ func parseMsg(text string) (string, error) {
 // 	c := "-"
 // 	var final string
 // 	for idx, line := range lines {
+// 		insert := false
 // 		// | leftNode |-----SYN---->| rightNode |
-// 		final += buildWall(leftNode)
+// 		if idx/len(lines) == 2 {
+// 			// we need to insert the word half way through the rectangle
+// 			insert = true
+// 		}
+// 		final += buildWall(leftNode, insert) // + arrow + buildWall(rightNode, insert)
 // 	}
 
 // 	return "ahh"
@@ -141,17 +147,28 @@ func readDataFile(filename string) ([]string, error) {
 	return lines, nil
 }
 
-func genArrow(arrowType string, len int) string {
+// refactor this to take the string for the middle of the arrow:
+// ----SYN---->
+// Note that it will truncate for odds.
+func genArrow(arrowType string, len int, text string) string {
 	var base string
+	genLength := len - utf8.RuneCountInString(text)
+	// When we have an odd number length, we don't want to truncate, but we also don't want to over add
+	// by adding the same amount to either side. We need to balance the offset. To do this, we put the extra
+	// character at the end of the arrow
+	endLength := (genLength - 1) / 2
+	if (genLength-1)%2 != 0 {
+		endLength = ((genLength - 1) / 2) + 1
+	}
 	switch arrowType {
 	case "right":
-		base = genStringOfLen("-", (len - 1))
+		base = genStringOfLen("-", ((genLength-1)/2)) + text + genStringOfLen("-", endLength)
 		base += ">"
 	case "left":
-		base = genStringOfLen("-", (len - 1))
+		base = genStringOfLen("-", ((genLength-1)/2)) + text + genStringOfLen("-", endLength)
 		base = "<" + base
 	case "bi":
-		base = genStringOfLen("-", (len - 2))
+		base = genStringOfLen("-", ((genLength-2)/2)) + text + genStringOfLen("-", endLength)
 		base = "<" + base + ">"
 	}
 	return base

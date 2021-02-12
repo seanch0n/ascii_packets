@@ -151,30 +151,40 @@ two lines`
 }
 
 func TestGenArrow(t *testing.T) {
-	assertArrow := func(t testing.TB, arrowType string, len int, want string) {
+	assertArrow := func(t testing.TB, arrowType string, len int, text string, want string) {
 		t.Helper()
-		got := genArrow(arrowType, len)
+		got := genArrow(arrowType, len, text)
 		if got != want {
-			t.Errorf("got\n%s\nwant\n%s", got, want)
+			t.Errorf("got\n%q\nwant\n%q", got, want)
 		}
 	}
 	t.Run("right arrow", func(t *testing.T) {
 		arrowType := "right"
 		arrowLen := 10
-		want := "--------->"
-		assertArrow(t, arrowType, arrowLen, want)
+		arrowText := "SYN"
+		want := "---SYN--->"
+		assertArrow(t, arrowType, arrowLen, arrowText, want)
 	})
 	t.Run("left arrow", func(t *testing.T) {
 		arrowType := "left"
 		arrowLen := 10
-		want := "<---------"
-		assertArrow(t, arrowType, arrowLen, want)
+		arrowText := "SYN"
+		want := "<---SYN---"
+		assertArrow(t, arrowType, arrowLen, arrowText, want)
 	})
 	t.Run("bi arrow", func(t *testing.T) {
 		arrowType := "bi"
 		arrowLen := 10
-		want := "<-------->"
-		assertArrow(t, arrowType, arrowLen, want)
+		arrowText := "SYN"
+		want := "<--SYN--->"
+		assertArrow(t, arrowType, arrowLen, arrowText, want)
+	})
+	t.Run("right arrow odd length", func(t *testing.T) {
+		arrowType := "right"
+		arrowLen := 11
+		arrowText := "SYN"
+		want := "---SYN---->"
+		assertArrow(t, arrowType, arrowLen, arrowText, want)
 	})
 }
 
