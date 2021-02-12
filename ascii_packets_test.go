@@ -149,3 +149,31 @@ two lines`
 	})
 
 }
+
+func TestGenArrow(t *testing.T) {
+	assertArrow := func(t testing.TB, arrowType string, len int, want string) {
+		t.Helper()
+		got := genArrow(arrowType, len)
+		if got != want {
+			t.Errorf("got\n%s\nwant\n%s", got, want)
+		}
+	}
+	t.Run("right arrow", func(t *testing.T) {
+		arrowType := "right"
+		arrowLen := 10
+		want := "--------->"
+		assertArrow(t, arrowType, arrowLen, want)
+	})
+	t.Run("left arrow", func(t *testing.T) {
+		arrowType := "left"
+		arrowLen := 10
+		want := "<---------"
+		assertArrow(t, arrowType, arrowLen, want)
+	})
+	t.Run("bi arrow", func(t *testing.T) {
+		arrowType := "bi"
+		arrowLen := 10
+		want := "<-------->"
+		assertArrow(t, arrowType, arrowLen, want)
+	})
+}

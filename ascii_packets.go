@@ -82,9 +82,27 @@ func readDataFile(filename string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
+	// gets an array of each line of the file.
 	lines, err := readFile(file)
 	if err != nil {
 		return nil, err
 	}
 	return lines, nil
+}
+
+func genArrow(arrowType string, len int) string {
+	var base string
+	switch arrowType {
+	case "right":
+		base = genStringOfLen("-", (len - 1))
+		base += ">"
+	case "left":
+		base = genStringOfLen("-", (len - 1))
+		base = "<" + base
+	case "bi":
+		base = genStringOfLen("-", (len - 2))
+		base = "<" + base + ">"
+	}
+	return base
 }
